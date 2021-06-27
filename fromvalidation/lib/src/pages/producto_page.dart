@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fromvalidation/src/blocs/productos_bloc.dart';
+import 'package:fromvalidation/src/blocs/provider.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:fromvalidation/src/model/producto_model.dart';
-import 'package:fromvalidation/src/providers/productos_provider.dart';
 import 'package:fromvalidation/src/utilis/utils.dart' as utils;
 
 class ProductoPage extends StatefulWidget {
@@ -11,12 +16,16 @@ class ProductoPage extends StatefulWidget {
 class _ProductoPageState extends State<ProductoPage> {
   final formkey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  ProductosBloc? productosBloc;
   ProductoModel producto = ProductoModel();
-  final productoPorvider = new ProductosProvider();
   bool _guardando = false;
+  File? foto;
+  final _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
+    productosBloc = Provider.productosBloc(context);
     final prodData = ModalRoute.of(context)?.settings.arguments;
     if (prodData != null) {
       producto = prodData as ProductoModel;
@@ -28,11 +37,11 @@ class _ProductoPageState extends State<ProductoPage> {
         title: Text('Producto'),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: _seleccionarForo,
             icon: Icon(Icons.photo_size_select_actual),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: _tomarFoto,
             icon: Icon(Icons.camera_alt),
           ),
         ],
@@ -44,6 +53,7 @@ class _ProductoPageState extends State<ProductoPage> {
             key: this.formkey,
             child: Column(
               children: <Widget>[
+                _mostrarFoto(),
                 _crearNombre(),
                 _crearPrecio(),
                 _crearDisponible(),
@@ -120,9 +130,11 @@ class _ProductoPageState extends State<ProductoPage> {
       _guardando = true;
     });
     if (producto.id == null) {
-      productoPorvider.crearProducto(producto);
+      productosBloc!.agregarproducto(producto);
+      // productoPorvider.crearProducto(producto);
     } else {
-      productoPorvider.editarProducto(producto);
+      productosBloc!.editarproducto(producto);
+      //productoPorvider.editarProducto(producto);
     }
     setState(() {
       _guardando = false;
@@ -138,5 +150,37 @@ class _ProductoPageState extends State<ProductoPage> {
     );
     // ignore: deprecated_member_use
     scaffoldKey.currentState!.showSnackBar(snackbar);
+  }
+
+  Widget _mostrarFoto() {
+    if (producto.fotoUrl != null) {
+      return Container();
+    } else {
+      // ignore: unnecessary_null_comparison
+      if (foto != null) {
+        return Image.file(
+          foto!,
+          height: 300.0,
+          fit: BoxFit.cover,
+        );
+      }
+      return Image.asset('assets/no-image.png');
+    }
+  }
+
+  void _seleccionarForo() async {
+    _procesarImagen(ImageSource.gallery);
+  }
+
+  void _tomarFoto() async {
+    _procesarImagen(ImageSource.camera);
+  }
+
+  _procesarImagen(ImageSource origin) async {
+    final pickedFile = await _picker.getImage(source: origin);
+    // ignore: unnecessary_null_comparison
+    foto = File(pickedFile!.path);
+    if (foto != null) {}
+    setState(() {});
   }
 }
