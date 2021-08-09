@@ -10,21 +10,44 @@ class MoviesProvider extends ChangeNotifier {
   String _baseUrl = 'api.themoviedb.org';
   String _language = 'es-ES';
 
+  int _popularesPage = 0;
+
   List<Movie> onDisplayMovie = [];
+  List<Movie> onPopularMovie = [];
 
   MoviesProvider() {
     print("MoviesProvider inicializado");
     getOnDisplayMovie();
+    getPopularMovue();
   }
-  getOnDisplayMovie() async {
-    var url = Uri.http(_baseUrl, '3/movie/now_playing', {
+
+  _getresult(String url, String? page) async {
+    var uri = Uri.http(_baseUrl, url, {
       'api_key': _apikey,
       'language': _language,
+      'pager': page == null ? '' : page,
     });
-    final response = await http.get(url);
+    final response = await http.get(uri);
     final decodedData = json.decode(response.body);
-    final movies = Movies.fromJsonList(decodedData['results']);
+    return decodedData['results'];
+  }
+
+  getOnDisplayMovie() async {
+    final result = await _getresult('3/movie/now_playing', null);
+    final movies = Movies.fromJsonList(result);
     this.onDisplayMovie = movies.items;
+    notifyListeners();
+  }
+
+  getPopularMovue() async {
+    _popularesPage++;
+
+    final result = await _getresult(
+      '3/movie/popular',
+      _popularesPage.toString(),
+    );
+    final movies = Movies.fromJsonList(result);
+    this.onPopularMovie = [...movies.items];
     notifyListeners();
   }
 }
