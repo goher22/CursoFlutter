@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peliculas_2/widgets/casting_cards.dart';
 
 class DetailsScreen extends StatelessWidget {
   @override
@@ -12,8 +13,10 @@ class DetailsScreen extends StatelessWidget {
           SliverList(
             delegate: SliverChildListDelegate([
               _PosterAndTitle(),
+              _Overview(),
+              CastingCards(),
             ]),
-          )
+          ),
         ],
       ),
     );
@@ -34,6 +37,7 @@ class _CustomAppBar extends StatelessWidget {
         title: Container(
           width: double.infinity,
           alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.only(bottom: 5),
           color: Colors.black12,
           child: Text(
             'movie.title',
@@ -98,6 +102,21 @@ class _PosterAndTitle extends StatelessWidget {
             ],
           )
         ],
+      ),
+    );
+  }
+}
+
+class _Overview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      child: Text(
+        "ajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsdajshdbaskdbajsd",
+        textAlign: TextAlign.justify,
+        style: textTheme.subtitle1,
       ),
     );
   }
