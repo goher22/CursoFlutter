@@ -68,4 +68,12 @@ class Movie {
       return 'https://image.tmdb.org/t/p/w500$posterPath';
     }
   }
+
+  get fullBackdroPath {
+    if (posterPath == null) {
+      return 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1200px-Imagen_no_disponible.svg.png';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500$backdropPath';
+    }
+  }
 }
