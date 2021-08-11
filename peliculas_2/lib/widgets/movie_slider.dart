@@ -1,12 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:peliculas_2/models/movies_response.dart';
 
-class MovieSlider extends StatelessWidget {
+class MovieSlider extends StatefulWidget {
   final List<Movie> movies;
   final String? title;
+  final Function onNextPage;
 
-  const MovieSlider({Key? key, required this.movies, this.title})
-      : super(key: key);
+  const MovieSlider({
+    Key? key,
+    required this.movies,
+    required this.onNextPage,
+    this.title,
+  }) : super(key: key);
+
+  @override
+  _MovieSliderState createState() => _MovieSliderState();
+}
+
+class _MovieSliderState extends State<MovieSlider> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        widget.onNextPage();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +39,22 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (this.title != null)
+          if (this.widget.title != null)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                this.title.toString(),
+                this.widget.title.toString(),
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
           SizedBox(height: 5),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: movies.length,
-              itemBuilder: (_, int index) => _MoviePoster(movie: movies[index]),
+              itemCount: widget.movies.length,
+              itemBuilder: (_, int index) =>
+                  _MoviePoster(movie: widget.movies[index]),
             ),
           )
         ],

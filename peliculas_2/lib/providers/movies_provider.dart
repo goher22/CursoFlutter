@@ -21,19 +21,16 @@ class MoviesProvider extends ChangeNotifier {
     getPopularMovue();
   }
 
-  _getresult(String url, String? page) async {
-    var uri = Uri.http(_baseUrl, url, {
-      'api_key': _apikey,
-      'language': _language,
-      'pager': page == null ? '' : page,
-    });
+  _getresult(Uri uri) async {
     final response = await http.get(uri);
     final decodedData = json.decode(response.body);
     return decodedData['results'];
   }
 
   getOnDisplayMovie() async {
-    final result = await _getresult('3/movie/now_playing', null);
+    var uri = Uri.http(_baseUrl, '3/movie/now_playing',
+        {'api_key': _apikey, 'language': _language});
+    final result = await _getresult(uri);
     final movies = Movies.fromJsonList(result);
     this.onDisplayMovie = movies.items;
     notifyListeners();
@@ -42,12 +39,15 @@ class MoviesProvider extends ChangeNotifier {
   getPopularMovue() async {
     _popularesPage++;
 
-    final result = await _getresult(
-      '3/movie/popular',
-      _popularesPage.toString(),
-    );
+    var uri = Uri.http(_baseUrl, '3/movie/now_playing', {
+      'api_key': _apikey,
+      'language': _language,
+      'page': _popularesPage.toString()
+    });
+
+    final result = await _getresult(uri);
     final movies = Movies.fromJsonList(result);
-    this.onPopularMovie = [...movies.items];
+    this.onPopularMovie = [...onPopularMovie, ...movies.items];
     notifyListeners();
   }
 }
