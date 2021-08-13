@@ -54,6 +54,18 @@ class MoviesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<Movie>> getSearchMovie(String shearMovie) async {
+    var uri = Uri.http(_baseUrl, '3/search/movie', {
+      'api_key': _apikey,
+      'language': _language,
+      'query': shearMovie,
+    });
+
+    final result = await _getresult(uri);
+    final movies = Movies.fromJsonList(result);
+    return movies.items;
+  }
+
   Future<List<Actor>> getMovieCast(int movieId) async {
     if (moviesCast.containsKey(movieId)) return moviesCast[movieId]!;
 
