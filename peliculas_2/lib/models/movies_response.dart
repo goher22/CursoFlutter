@@ -27,6 +27,8 @@ class Movie {
   double? voteAverage;
   int? voteCount;
 
+  String? heroId;
+
   Movie({
     this.adult,
     this.backdropPath,
