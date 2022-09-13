@@ -44,6 +44,8 @@ class _MapaPageState extends State<MapaPage> {
       ),
       body: GoogleMap(
         myLocationButtonEnabled: false,
+        compassEnabled: true,
+        tiltGesturesEnabled: false,
         mapType: maptype,
         markers: markers,
         initialCameraPosition: puntoInicial,
